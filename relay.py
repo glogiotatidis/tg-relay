@@ -11,6 +11,9 @@ logger = logging.getLogger(__name__)
 client = TelegramClient(config.SESSION_NAME, config.API_ID, config.API_HASH)
 client.start()
 
+client.get_dialogs()
+client.get_me()
+
 
 RELAY_MAP = {
     1368436776: [   # Trobidia
