@@ -26,7 +26,7 @@ async def setup():
 
         key, values = x.split(':', 1)
         values = values.split(',')
-        RELAY_MAP[key] = values
+        RELAY_MAP[int(key)] = [int(x) for x in values]
 
 
 
@@ -46,5 +46,4 @@ async def my_event_handler(event):
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(setup())
-print(RELAY_MAP)
 client.run_until_disconnected()
