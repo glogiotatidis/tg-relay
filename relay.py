@@ -16,7 +16,7 @@ client.get_me()
 
 
 RELAY_MAP = {
-    1368436776: [   # Trobidia
+    1191260995: [   # Test channel
         269584728,  # Relay
     ]
 }
