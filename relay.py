@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-from telethon import TelegramClient, events
-
+import asyncio
 import logging
+
+from telethon import TelegramClient, events
 
 import config
 
@@ -11,15 +12,23 @@ logger = logging.getLogger(__name__)
 client = TelegramClient(config.SESSION_NAME, config.API_ID, config.API_HASH)
 client.start()
 
-client.get_dialogs()
-client.get_me()
+RELAY_MAP = {}
 
 
-RELAY_MAP = {
-    1191260995: [   # Test channel
-        269584728,  # Relay
-    ]
-}
+async def setup():
+    user = await client.get_me()
+    logger.info(f'Started serving as {user.first_name}')
+    await client.get_dialogs()
+
+    for x in config.RELAY_MAP.split(';'):
+        if not x:
+            return
+
+        key, values = x.split(':', 1)
+        values = values.split(',')
+        RELAY_MAP[key] = values
+
+
 
 
 @client.on(events.NewMessage)
@@ -35,4 +44,7 @@ async def my_event_handler(event):
             logger.info(f'Sending message from {event.chat.id} default {relay}')
             await client.send_message(relay, event.message)
 
+loop = asyncio.get_event_loop()
+loop.run_until_complete(setup())
+print(RELAY_MAP)
 client.run_until_disconnected()
