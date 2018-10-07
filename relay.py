@@ -29,20 +29,24 @@ async def setup():
         RELAY_MAP[int(key)] = [int(x) for x in values]
 
 
-
-
 @client.on(events.NewMessage)
 async def my_event_handler(event):
     for chat_id, relays in RELAY_MAP.items():
         if chat_id == event.chat.id:
             for relay in relays:
                 logger.info(f'Sending message from {event.chat.id} to {relay}')
-                await client.send_message(relay, event.message)
+                if config.FORWARD:
+                    await client.forward_messages(relay, event.message)
+                else:
+                    await client.send_message(relay, event.message)
             break
     else:
         for relay in RELAY_MAP.get('default', []):
             logger.info(f'Sending message from {event.chat.id} default {relay}')
-            await client.send_message(relay, event.message)
+            if config.FORWARD:
+                await client.forward_messages(relay, event.message)
+            else:
+                await client.send_message(relay, event.message)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(setup())
