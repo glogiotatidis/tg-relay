@@ -2,3 +2,4 @@
 .env
 *.session*
 data/
+docs.org
