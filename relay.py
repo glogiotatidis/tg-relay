@@ -17,7 +17,7 @@ RELAY_MAP = {}
 
 async def setup():
     user = await client.get_me()
-    logger.info(f'Started serving as {user.first_name}')
+    logger.info('Started serving as {}'.format(user.first_name))
     await client.get_dialogs()
 
     for x in config.RELAY_MAP.split(';'):
@@ -32,9 +32,9 @@ async def setup():
 @client.on(events.NewMessage)
 async def my_event_handler(event):
     for chat_id, relays in RELAY_MAP.items():
-        if chat_id == event.chat.id:
+        if event.chat and event.chat.id == chat_id:
             for relay in relays:
-                logger.info(f'Sending message from {event.chat.id} to {relay}')
+                logger.info('Sending message from {} to {}'.format(event.chat.id, relay))
                 if config.FORWARD:
                     await client.forward_messages(relay, event.message)
                 else:
@@ -42,7 +42,7 @@ async def my_event_handler(event):
             break
     else:
         for relay in RELAY_MAP.get('default', []):
-            logger.info(f'Sending message from {event.chat.id} default {relay}')
+            logger.info('Sending message from {} to {}'.format(event.chat.id, relay))
             if config.FORWARD:
                 await client.forward_messages(relay, event.message)
             else:
